@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.core.mail import message
 from django.db.models import Count
 from django.utils.translation import ugettext as _
+from django.utils.html import format_html
 from django.template.defaultfilters import linebreaks_filter
 
 from database_email_backend.models import Email, Attachment
@@ -40,9 +41,8 @@ class AttachmentInlineAdmin(admin.TabularInline):
             'filename': str(obj.filename)
             }
         url = reverse(url_name, kwargs=kwargs)
-        return u'<a href="%(url)s">%(fname)s</a>' % {'fname': obj.filename,
-                                                     'url': url}
-    file_link.allow_tags = True
+        return format_html(u'<a href="%(url)s">%(fname)s</a>' % {'fname': obj.filename,
+                           'url': url})
 
 
 class EmailAdmin(admin.ModelAdmin):
@@ -104,8 +104,7 @@ class EmailAdmin(admin.ModelAdmin):
         return response
 
     def body_br(self, obj):
-        return linebreaks_filter(obj.body)
-    body_br.allow_tags = True
+        return format_html(linebreaks_filter(obj.body))
     body_br.short_description = 'body'
     body_br.admin_order_field = 'body'
 
